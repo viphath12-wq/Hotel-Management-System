@@ -11,6 +11,7 @@
       <div class="flex h-16 items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-700">
         <div
           class="size-10 rounded-lg bg-cover bg-center bg-no-repeat shadow-sm"
+          @click="mobileMenuOpen = false"
           :style="{ backgroundImage: `url(${hotelLogo})` }"
         ></div>
         <div>
@@ -43,6 +44,7 @@
                 v-for="child in item.children"
                 :key="child.key"
                 :to="child.key"
+                @click="mobileMenuOpen = false"
                 class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-[#2d3b4e] transition-colors"
                 :class="{ 'bg-[green]/10 text-[green] dark:text-green-400': route.path === child.key }"
               >
@@ -56,6 +58,7 @@
           <RouterLink
             v-else
             :to="item.key"
+            @click="mobileMenuOpen = false"
             class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2d3b4e] transition-colors"
             :class="{ 'bg-[green]/10 text-[green] dark:text-green-400 hover:bg-[green]/20': route.path === item.key }"
           >
@@ -158,7 +161,7 @@
       </main>
 
       <footer class="h-12 flex items-center justify-between bg-white dark:bg-[#1e293b] px-6 border-t border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400">
-        <p>© {{ year }} Battambang Hotel. All rights reserved.</p>
+        <p> 2023 Battambang Hotel. All rights reserved.</p>
         <div class="flex items-center gap-4">
           <span>{{ currentDate }}</span>
           <span class="hidden sm:inline">v1.0.0</span>
@@ -310,6 +313,7 @@ const finalMenuLeft = computed(() => {
 
 const goTo = (path) => {
   open.value = false
+  mobileMenuOpen.value = false
   router.push(path)
 }
 
