@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Page Title -->
     <div class="flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard Overview</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
       <p class="text-sm text-gray-500 dark:text-gray-400">Last updated: {{ lastUpdatedLabel }}</p>
     </div>
 
