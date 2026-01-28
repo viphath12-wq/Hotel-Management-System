@@ -1,17 +1,10 @@
 <template>
-  <div class="">
-    <div class="max-w-7xl mx-auto">
-      <!-- Header -->
-      <div class="text-center">
-        <h1 class="text-4xl font-bold bg-green-600 to-green-700 bg-clip-text text-transparent dark:bg-green-400 dark:to-green-500 mb-4">
-          My Profile
-        </h1>
-      </div>
-
+  <div class="max-w-6xl mx-auto md:px-4 py-4">
+    <div class="">
       <!-- Loading -->
       <div v-if="loading" class="flex justify-center py-32">
         <div class="flex flex-col items-center gap-4">
-          <div class="h-16 w-16 animate-spin rounded-2xl from-green-500 to-green-600 shadow-xl"></div>
+          <div class="h-16 w-16 animate-spin rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 shadow-xl"></div>
           <p class="text-lg text-gray-600 dark:text-gray-400 font-medium">Loading profile...</p>
         </div>
       </div>
@@ -29,18 +22,18 @@
 
       <!-- Profile Card -->
       <div v-else-if="profile" class="group">
-        <div class="overflow-hidden rounded-3xl bg-white/80 dark:bg-gray-800/90 backdrop-blur-xl shadow-2xl border border-white/50 dark:border-gray-700/50">
+        <div class="overflow-hidden rounded-3xl bg-white dark:bg-gray-800 shadow-xl border border-gray-200 dark:border-gray-700 max-w-5xl mx-auto">
           <!-- Gradient Header -->
-          <div class="h-40 bg-green-600 via-green-500 to-emerald-600 relative overflow-hidden">
-            <div class="absolute inset-0 from-transparent via-white/10 to-transparent"></div>
+          <div class="h-36 bg-gradient-to-r from-green-600 via-green-500 to-emerald-600 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
           </div>
 
           <!-- Content -->
-          <div class="relative px-8 pb-12 -mt-20">
+          <div class="relative px-5 md:px-8 pb-10 -mt-16">
             <!-- Avatar Section -->
             <div class="flex justify-center lg:justify-start">
               <div class="relative group/avatar">
-                <div class="relative h-36 w-36 rounded-3xl ring-8 ring-white/90 dark:ring-gray-800/90 shadow-2xl transition-all duration-500 hover:scale-105 hover:shadow-3xl border-4 border-white/50 overflow-hidden">
+                <div class="relative h-32 w-32 md:h-36 md:w-36 rounded-3xl ring-8 ring-white dark:ring-gray-800 shadow-2xl transition-all duration-500 hover:scale-105 border-4 border-white/50 overflow-hidden">
                   <img
                     v-if="profileImageUrl"
                     :src="profileImageUrl"
@@ -48,7 +41,7 @@
                     class="w-full h-full object-cover"
                     @error="handleImageError"
                   />
-                  <div v-else class="absolute inset-0 flex items-center justify-center bg-gray-100 to-gray-200 dark:bg-gray-700 dark:to-gray-600 rounded-3xl">
+                  <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-3xl">
                     <span class="material-symbols-outlined text-5xl text-gray-400 dark:text-gray-500">account_circle</span>
                   </div>
 
@@ -79,17 +72,18 @@
             </div>
 
             <!-- Profile Info -->
-            <div class="mt-12 text-center lg:text-left lg:ml-4 lg:mt-0">
+            <div class="mt-10 text-center lg:text-left lg:ml-4 lg:mt-0">
               <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
                 <div>
-                  <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+                  <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
                     {{ profile.name || 'User' }}
                   </h2>
-                  <p class="text-xl text-gray-600 dark:text-gray-400 mt-2 flex items-center justify-center lg:justify-start gap-2">
+                  <p class="text-base md:text-lg text-gray-600 dark:text-gray-400 mt-2 flex items-center justify-center lg:justify-start gap-2">
                     <span class="material-symbols-outlined text-green-500 text-lg">mail</span>
                     {{ profile.email }}
                   </p>
                 </div>
+
                 <div class="flex items-center justify-center lg:justify-end">
                   <div class="inline-flex items-center gap-2 px-6 py-3 bg-green-100 dark:bg-green-900/50 border border-green-200 dark:border-green-800/50 rounded-2xl text-green-800 dark:text-green-200 font-medium text-sm shadow-lg">
                     <span class="material-symbols-outlined text-lg">verified_user</span>
@@ -99,7 +93,7 @@
               </div>
 
               <!-- Quick Stats -->
-              <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
                 <div class="text-center lg:text-left p-4 rounded-2xl bg-gray-50/50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-600/30 transition-all">
                   <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ formatDate(profile.created_at) }}</div>
                   <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Member Since</div>
@@ -120,10 +114,10 @@
             </div>
 
             <!-- Action Buttons -->
-            <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mt-12">
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3 justify-center lg:justify-start mt-8">
               <button
                 @click="openEditModal"
-                class="flex items-center justify-center gap-3 px-8 py-4 bg-green-600 to-green-700 text-white font-semibold rounded-2xl hover:bg-green-700 hover:to-green-800 focus:ring-4 focus:ring-green-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 whitespace-nowrap"
+                class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-green-600 text-white font-semibold rounded-2xl hover:bg-green-700 focus:ring-4 focus:ring-green-500/30 shadow-lg transition-all duration-300 whitespace-nowrap"
               >
                 <span class="material-symbols-outlined">edit</span>
                 Edit Profile
@@ -131,7 +125,7 @@
 
               <button
                 @click="openPasswordModal"
-                class="flex items-center justify-center gap-3 px-8 py-4 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 focus:ring-4 focus:ring-gray-500/20 shadow-lg transition-all duration-300 whitespace-nowrap"
+                class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-700/50 focus:ring-4 focus:ring-gray-500/20 shadow-md transition-all duration-300 whitespace-nowrap"
               >
                 <span class="material-symbols-outlined">lock</span>
                 Change Password
@@ -139,7 +133,7 @@
 
               <button
                 @click="onLogout"
-                class="flex items-center justify-center gap-3 px-8 py-4 bg-red-600 to-red-700 text-white font-semibold rounded-2xl hover:bg-red-700 hover:to-red-800 focus:ring-4 focus:ring-red-500/30 shadow-xl hover:shadow-2xl transition-all duration-300 whitespace-nowrap ml-auto sm:ml-0"
+                class="w-full sm:w-auto flex items-center justify-center gap-3 px-6 py-3 bg-red-600 text-white font-semibold rounded-2xl hover:bg-red-700 focus:ring-4 focus:ring-red-500/30 shadow-lg transition-all duration-300 whitespace-nowrap"
               >
                 <span class="material-symbols-outlined">logout</span>
                 Logout
@@ -155,9 +149,10 @@
 
     <!-- Edit Profile Modal -->
     <div v-if="showEditModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" @click.self="closeEditModal">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-8">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Profile</h2>
         <form @submit.prevent="saveProfile" class="space-y-5">
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
             <input v-model="editForm.name" type="text" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none" />
@@ -186,9 +181,10 @@
 
     <!-- Change Password Modal -->
     <div v-if="showPasswordModal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" @click.self="closePasswordModal">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-8">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-md w-full p-6">
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Change Password</h2>
         <form @submit.prevent="changePassword" class="space-y-5">
+
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Current Password</label>
             <input v-model="passwordForm.current" type="password" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 focus:ring-2 focus:ring-green-500 outline-none" />

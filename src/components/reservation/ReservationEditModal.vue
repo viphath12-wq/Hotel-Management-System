@@ -1,17 +1,17 @@
 <template>
   <div
-    class="fixed inset-0 bg-black/5 flex items-center justify-center z-50"
+    class="fixed inset-0 bg-black/5 flex items-center justify-center z-50 p-4 overflow-y-auto"
     @click.self="$emit('close')"
   >
     <div
-      class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-lg sm:max-w-xl transform transition-all scale-100"
+      class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md sm:max-w-lg transform transition-all scale-100 max-h-[90vh] overflow-y-auto"
       @click.stop
     >
-      <div class="px-6 py-5 border-b border-gray-200 dark:border-gray-700">
+      <div class="px-4 py-4 border-b border-gray-200 dark:border-gray-700">
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Edit Reservation</h3>
       </div>
 
-      <div class="p-6 space-y-6">
+      <div class="p-4 space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -138,7 +138,7 @@
         </div>
       </div>
 
-      <div class="flex justify-end gap-3 px-6 py-5 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-900/50 rounded-b-2xl">
+      <div class="flex justify-end gap-3 px-4 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-900/50 rounded-b-2xl">
         <button
           type="button"
           class="px-5 py-2.5 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-600 transition disabled:opacity-50"
