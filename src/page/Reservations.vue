@@ -123,7 +123,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, inject, watch } from 'vue'
 import request from '../util/request'
 import { showToast } from '../util/toast'
 import ConfirmModalDelete from '../components/ConfirmDeleteModel.vue'
@@ -146,7 +146,11 @@ const isSaving = ref(false)
 const cancellingId = ref(null)
 
 // Filters
-const searchQuery = ref('')
+const headerSearchQuery = inject('reservationsSearchQuery', null)
+let searchQuery = ref('')
+if (headerSearchQuery) {
+  searchQuery = headerSearchQuery
+}
 const statusFilter = ref('all')
 const checkInDate = ref('')
 const checkOutDate = ref('')
@@ -477,4 +481,15 @@ onMounted(async () => {
     showToast('Failed to load initial data', 'error')
   }
 })
+
+watch(
+  () => searchQuery.value,
+  async (val, oldVal) => {
+    const prevHadSearch = typeof oldVal === 'string' && oldVal.trim().length > 0
+    const nowHasSearch = typeof val === 'string' && val.trim().length > 0
+    if (prevHadSearch && !nowHasSearch) {
+      await loadReservations()
+    }
+  }
+)
 </script>

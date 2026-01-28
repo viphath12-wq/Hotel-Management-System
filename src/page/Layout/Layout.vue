@@ -138,7 +138,7 @@
         <div class="flex items-center gap-3">
           <div class="hidden sm:flex items-center rounded-lg bg-gray-100 dark:bg-[#2d3b4e] px-3 py-2 w-72 border border-transparent focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
             <span class="material-symbols-outlined text-gray-500 text-xl">search</span>
-            <input type="text" placeholder="Search reservations, guests, rooms..." class="ml-2 w-full bg-transparent text-sm outline-none placeholder-gray-500 dark:placeholder-gray-400" />
+            <input v-model="headerSearchQuery" type="text" placeholder="Search reservations..." class="ml-2 w-full bg-transparent text-sm outline-none placeholder-gray-500 dark:placeholder-gray-400" />
           </div>
 
           <div class="flex items-center gap-2">
@@ -150,7 +150,7 @@
               <span class="material-symbols-outlined text-2xl">help</span>
             </button>
             <button class="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-[#2d3b4e] transition-colors">
-              <span class="material-symbols-outlined text-2xl">account_circle</span>
+              <span @click="goTo('/profile')" class="material-symbols-outlined text-2xl">account_circle</span>
             </button>
           </div>
         </div>
@@ -173,12 +173,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, provide, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useProfileStore } from '@/util/profile'
 import { formatDate, formatTime } from '@/util/helpers'
 import hotelLogo from '../../assets/Hotel_icon.png'
 import userAvatar from '../../assets/user_avatar.png'
+
 import request from '../../util/request'
 import configurl from '../../util/configurl'
 import ConfirmModal from '../../components/ConfirmModalLogout.vue'
@@ -198,6 +199,9 @@ const open = ref(false)
 const userTriggerRef = ref(null)
 const dropdownRef = ref(null)
 const confirmModal = ref(null)
+
+const headerSearchQuery = ref('')
+provide('reservationsSearchQuery', headerSearchQuery)
 
 // Time
 const now = ref(new Date())
@@ -360,4 +364,34 @@ onMounted(() => {
     document.removeEventListener('click', handleClickOutside)
   }
 })
+
+watch(
+  () => route.path,
+  (path) => {
+    if (!path?.startsWith('/reservations')) {
+      headerSearchQuery.value = ''
+    }
+  }
+)
+
+watch(
+  () => headerSearchQuery.value,
+  (val, oldVal) => {
+    const prevHadSearch = typeof oldVal === 'string' && oldVal.trim().length > 0
+    const nowHasSearch = typeof val === 'string' && val.trim().length > 0
+
+    if (!prevHadSearch && nowHasSearch) {
+      if (!route.path?.startsWith('/reservations')) {
+        router.push('/reservations')
+      }
+      return
+    }
+
+    if (prevHadSearch && !nowHasSearch) {
+      if (route.path !== '/dashboard') {
+        router.push('/dashboard')
+      }
+    }
+  }
+)
 </script>
