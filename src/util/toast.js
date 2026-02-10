@@ -1,4 +1,3 @@
-// /util/toast.js
 import { createApp, h } from 'vue'
 
 const ToastComponent = {

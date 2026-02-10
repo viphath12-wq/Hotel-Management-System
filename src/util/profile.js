@@ -1,4 +1,3 @@
-// src/util/profile.js
 import { defineStore } from 'pinia'
 
 export const useProfileStore = defineStore('profile', {

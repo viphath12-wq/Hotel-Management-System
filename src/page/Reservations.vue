@@ -74,6 +74,8 @@
           :disabled="isLoading"
           class="px-4 py-2.5 bg-gray-50 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none disabled:opacity-60 transition"
         >
+        <!-- Paid -->
+         <!-- failed -->
           <option value="all">All Statuses</option>
           <option value="confirmed">Confirmed</option>
           <option value="pending">Pending</option>
@@ -109,7 +111,72 @@
       @print="printInvoice"
       @edit="openEdit"
       @cancel="cancelReservation"
+      @pay="openPayment"
     />
+
+    <div v-if="isPaymentOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/60" @click="closePayment" />
+      <div
+        class="relative w-full max-w-md rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-xl overflow-hidden"
+      >
+        <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-slate-700">
+          <div>
+            <div class="text-sm font-semibold text-gray-900 dark:text-gray-100">Bakong Payment</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">Reservation #{{ paymentReservation?.id }}</div>
+          </div>
+          <button
+            type="button"
+            class="inline-flex items-center justify-center size-9 rounded-lg border border-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700/50"
+            @click="closePayment"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <div class="p-5 space-y-4">
+          <div class="rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900/40 p-4">
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-gray-600 dark:text-gray-400">Amount</span>
+              <span class="font-semibold text-gray-900 dark:text-gray-100">${{ paymentAmount }}</span>
+            </div>
+          </div>
+
+          <div class="rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900/20 p-4">
+            <div v-if="paymentLoading" class="text-center text-sm text-gray-600 dark:text-gray-400">Generating QR...</div>
+            <div v-else-if="paymentError" class="text-center text-sm text-red-600">{{ paymentError }}</div>
+            <img v-else-if="paymentQrUrl" :src="paymentQrUrl" alt="Payment QR" class="w-full rounded-lg" />
+            <div v-else class="text-center text-sm text-gray-600 dark:text-gray-400">QR unavailable</div>
+          </div>
+
+          <div v-if="paymentPaid" class="rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+            Paid verified. Reservation confirmed.
+          </div>
+
+          <div v-if="paymentVerifying" class="text-xs text-gray-500 dark:text-gray-400">
+            Auto verifying transaction...
+          </div>
+
+          <div class="flex gap-3">
+            <button
+              type="button"
+              class="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-green-600 text-white hover:bg-green-700 disabled:opacity-60"
+              :disabled="paymentLoading || paymentVerifying || paymentPaid || !paymentMd5"
+              @click="verifyNow"
+            >
+              {{ paymentVerifying ? 'Verifying...' : 'Verify Now' }}
+            </button>
+            <button
+              type="button"
+              class="flex-1 inline-flex items-center justify-center px-4 py-2.5 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+              :disabled="paymentLoading || paymentVerifying || paymentPaid"
+              @click="cancelPaymentReservation"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <ConfirmModalDelete
       ref="confirmDeleteModal"
@@ -123,9 +190,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, inject, watch } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, inject, watch } from 'vue'
 import request from '../util/request'
 import { showToast } from '../util/toast'
+import QRCode from 'qrcode'
 import ConfirmModalDelete from '../components/ConfirmDeleteModel.vue'
 import ReservationCreateModal from '../components/reservation/ReservationCreateModal.vue'
 import ReservationEditModal from '../components/reservation/ReservationEditModal.vue'
@@ -151,6 +219,118 @@ let searchQuery = ref('')
 if (headerSearchQuery) {
   searchQuery = headerSearchQuery
 }
+
+// Payment modal state
+const isPaymentOpen = ref(false)
+const paymentReservation = ref(null)
+const paymentQrUrl = ref('')
+const paymentMd5 = ref('')
+const paymentLoading = ref(false)
+const paymentError = ref('')
+const paymentVerifying = ref(false)
+const paymentPaid = ref(false)
+let paymentPollId = null
+
+const clearPaymentPoll = () => {
+  if (paymentPollId) {
+    clearInterval(paymentPollId)
+    paymentPollId = null
+  }
+}
+
+const closePayment = () => {
+  isPaymentOpen.value = false
+  paymentReservation.value = null
+  paymentQrUrl.value = ''
+  paymentMd5.value = ''
+  paymentLoading.value = false
+  paymentError.value = ''
+  paymentVerifying.value = false
+  paymentPaid.value = false
+  clearPaymentPoll()
+}
+
+const openPayment = async (reservation) => {
+  isPaymentOpen.value = true
+  paymentReservation.value = reservation
+  paymentQrUrl.value = ''
+  paymentMd5.value = ''
+  paymentError.value = ''
+  paymentPaid.value = false
+  clearPaymentPoll()
+
+  paymentLoading.value = true
+  try {
+    const amount = Number(reservation?.raw?.total || 0) || 0
+    const khqrRes = await request('/public/bakong/khqr', 'POST', { amount })
+    const khqr = String(khqrRes?.khqr ?? '')
+    paymentMd5.value = String(khqrRes?.md5 ?? '')
+    if (!khqr) throw new Error('Missing KHQR string from server.')
+    paymentQrUrl.value = await QRCode.toDataURL(khqr, { errorCorrectionLevel: 'M', margin: 1, width: 420 })
+    startPaymentPolling()
+  } catch (e) {
+    paymentError.value = e?.response?.data?.message || e?.message || 'Failed to generate QR.'
+  } finally {
+    paymentLoading.value = false
+  }
+}
+
+const startPaymentPolling = () => {
+  clearPaymentPoll()
+  if (!paymentMd5.value || !paymentReservation.value?.id) return
+
+  paymentPollId = setInterval(async () => {
+    if (!isPaymentOpen.value) {
+      clearPaymentPoll()
+      return
+    }
+    if (paymentPaid.value) {
+      clearPaymentPoll()
+      return
+    }
+    if (paymentVerifying.value) return
+
+    await verifyNow(true)
+  }, 5000)
+}
+
+const verifyNow = async (silent = false) => {
+  if (!paymentReservation.value?.id || !paymentMd5.value) return
+
+  paymentVerifying.value = true
+  try {
+    const verifyRes = await request('/public/bakong/verify-transaction', 'POST', { md5: paymentMd5.value })
+    const paid = Boolean(verifyRes?.paid)
+    if (!paid) {
+      if (!silent) showToast('Not paid yet. Try again.', 'warning')
+      return
+    }
+
+    await request(`/public/reservations/${paymentReservation.value.id}/confirm-payment`, 'POST', { status: 'Confirmed' })
+    paymentPaid.value = true
+    clearPaymentPoll()
+    showToast('Payment verified. Reservation confirmed.', 'success')
+    await loadReservations()
+  } catch (e) {
+    if (!silent) {
+      showToast(e?.response?.data?.message || e?.message || 'Verify failed', 'error')
+    }
+  } finally {
+    paymentVerifying.value = false
+  }
+}
+
+const cancelPaymentReservation = async () => {
+  if (!paymentReservation.value?.id) return
+  try {
+    await request(`/public/reservations/${paymentReservation.value.id}/cancel`, 'POST')
+    showToast('Reservation cancelled.', 'success')
+    await loadReservations()
+    closePayment()
+  } catch (e) {
+    showToast(e?.response?.data?.message || e?.message || 'Failed to cancel reservation', 'error')
+  }
+}
 const statusFilter = ref('all')
 const checkInDate = ref('')
 const checkOutDate = ref('')
@@ -167,6 +347,11 @@ const createForm = ref({
   check_in: '',
   check_out: '',
   status: 'Pending'
+})
+
+const paymentAmount = computed(() => {
+  const total = paymentReservation.value?.raw?.total
+  return Number(total || 0).toFixed(2)
 })
 
 const editForm = ref({
@@ -492,4 +677,8 @@ watch(
     }
   }
 )
+
+onBeforeUnmount(() => {
+  clearPaymentPoll()
+})
 </script>

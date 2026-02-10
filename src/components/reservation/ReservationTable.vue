@@ -82,6 +82,14 @@
                   <span class="material-symbols-outlined text-[20px]">visibility</span>
                 </button>
                 <button
+                  @click="$emit('pay', reservation)"
+                  :disabled="isSaving"
+                  class="inline-flex items-center justify-center size-9 rounded-lg border border-transparent text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 hover:border-emerald-100 dark:hover:bg-emerald-900/20 dark:hover:border-emerald-900/30 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                  title="Payment"
+                >
+                  <span class="material-symbols-outlined text-[20px]">qr_code_2</span>
+                </button>
+                <button
                   @click="$emit('print', reservation)"
                   :disabled="isSaving"
                   class="inline-flex items-center justify-center size-9 rounded-lg border border-transparent text-slate-700 dark:text-slate-300 hover:bg-slate-50 hover:border-slate-200 dark:hover:bg-slate-700/50 dark:hover:border-slate-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
@@ -140,7 +148,7 @@ defineProps({
   statusBadgeClasses: Object
 })
 
-defineEmits(['view', 'edit', 'cancel', 'print'])
+defineEmits(['view', 'edit', 'cancel', 'print', 'pay'])
 
 const getGuestImage = (reservation) => {
   if (reservation.raw?.guest?.image) {

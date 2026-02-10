@@ -1,4 +1,3 @@
-// utils/request.js
 import axios from 'axios'
 import config from './configurl'
 import { useProfileStore } from '../util/profile'
