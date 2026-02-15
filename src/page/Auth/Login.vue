@@ -116,7 +116,7 @@ const onLogin = async () => {
       profileStore.setPermissions(response.permissions.map(p => p.name || p.permission))
 
       if (rememberMe.value) {
-        localStorage.setItem('rememberMe', 'true')
+        sessionStorage.setItem('rememberMe', 'true')
       }
 
       await router.push('/dashboard')

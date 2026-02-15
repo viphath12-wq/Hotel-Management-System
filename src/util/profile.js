@@ -40,7 +40,7 @@ export const useProfileStore = defineStore('profile', {
   },
 
   persist: {
-    storage: localStorage,
+    storage: sessionStorage,
     paths: ['token', 'profile', 'roles', 'permissions']
   }
 })

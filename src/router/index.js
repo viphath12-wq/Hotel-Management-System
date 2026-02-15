@@ -40,8 +40,8 @@ const routes = [
         path: '/',
         redirect: () => {
           try {
-            const profile = JSON.parse(localStorage.getItem('profile') || 'null')
-            const roles = JSON.parse(localStorage.getItem('roles') || 'null')
+            const profile = JSON.parse(sessionStorage.getItem('profile') || 'null')
+            const roles = JSON.parse(sessionStorage.getItem('roles') || 'null')
             const role = profile?.role || ''
             const hasRole = Array.isArray(roles) ? roles.length > 0 : Boolean(roles || role)
             return hasRole ? '/dashboard' : '/profile'
