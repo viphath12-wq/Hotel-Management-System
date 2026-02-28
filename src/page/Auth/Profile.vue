@@ -107,8 +107,8 @@
                   <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Address</div>
                 </div>
                 <div class="text-center lg:text-left p-4 rounded-2xl bg-gray-50/50 dark:bg-gray-700/30 hover:bg-gray-100 dark:hover:bg-gray-600/30 transition-all">
-                  <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 capitalize">{{ profile.profile?.type || 'User' }}</div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Type</div>
+                  <div class="text-2xl font-bold text-indigo-600 dark:text-indigo-400 capitalize">{{ roleLabel }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide font-medium">Role</div>
                 </div>
               </div>
             </div>
@@ -224,11 +224,10 @@
 import { ref, computed, onMounted } from 'vue'
 import request from '@/util/request'
 import { useProfileStore } from '@/util/profile'
-import { formatDate, formatTime } from '@/util/helpers'
-import configurl from '@/util/configurl'
+import { formatDate } from '@/util/helpers'
+import { resolveImageUrl } from '@/util/image'
 import { showToast } from '../../util/toast'
 import ConfirmModal from '../../components/ConfirmModalLogout.vue'
-import { resolveImageUrl } from '@/util/image'
 
 const profileStore = useProfileStore()
 
@@ -244,6 +243,25 @@ const showPasswordModal = ref(false)
 const confirmModal = ref(null)
 
 const profile = computed(() => profileStore.profile)
+
+const roleLabel = computed(() => {
+  const storeRole = profileStore.roles
+  if (Array.isArray(storeRole) && storeRole.length) return String(storeRole[0] || 'User')
+  if (typeof storeRole === 'string' && storeRole.trim()) return storeRole
+
+  const roles = profile.value?.roles
+  if (Array.isArray(roles) && roles.length) {
+    const first = roles[0]
+    if (first && typeof first === 'object' && 'name' in first) return String(first.name || 'User')
+    return String(first || 'User')
+  }
+
+  const role = profile.value?.role
+  if (role && typeof role === 'object' && 'name' in role) return String(role.name || 'User')
+  if (typeof role === 'string' && role.trim()) return role
+
+  return 'User'
+})
 
 // Image URL
 const profileImageUrl = computed(() => {
