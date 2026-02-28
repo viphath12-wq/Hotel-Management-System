@@ -177,7 +177,9 @@
 import { computed, onMounted, ref } from 'vue'
 import request from '@/util/request'
 import configurl from '@/util/configurl'
-import userAvatar from '../assets/user_avatar.png'
+import { showToast } from '@/util/toast'
+import userAvatar from '@/assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 
 const isLoadingReports = ref(false)
 const isLoadingReservations = ref(false)
@@ -212,8 +214,9 @@ const mapReservation = r => ({
 
 const getGuestImageSrc = (r) => {
   const path = r?.guest_image
-  if (!path) return userAvatar
-  return `${configurl.image_path}${path}`
+  const resolved = resolveImageUrl(path)
+  if (resolved) return resolved
+  return userAvatar
 }
 
 const onGuestImageError = (e) => {

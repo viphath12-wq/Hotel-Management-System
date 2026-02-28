@@ -85,11 +85,11 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import avatar from '@/assets/user_avatar.png'
+import { ref, computed, watch } from 'vue'
 import request from '@/util/request'
 import { showToast } from '@/util/toast'
 import configurl from '@/util/configurl'
+import { resolveImageUrl } from '@/util/image'
 
 const emit = defineEmits(['saved', 'saving'])
 
@@ -100,9 +100,8 @@ const isSaving = ref(false)
 const errors = ref({})
 
 const getGuestImage = (guest) => {
-  if (guest?.image) {
-    return `${configurl.image_path}${guest.image}`
-  }
+  const resolved = resolveImageUrl(guest?.image)
+  if (resolved) return resolved
   return avatar
 }
 const createGuestForm = () => ({

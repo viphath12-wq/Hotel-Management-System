@@ -210,6 +210,7 @@
         </form>
       </div>
     </div>
+
     <ConfirmModal
       ref="confirmModal"
       title="Logout"
@@ -227,6 +228,7 @@ import { formatDate, formatTime } from '@/util/helpers'
 import configurl from '@/util/configurl'
 import { showToast } from '../../util/toast'
 import ConfirmModal from '../../components/ConfirmModalLogout.vue'
+import { resolveImageUrl } from '@/util/image'
 
 const profileStore = useProfileStore()
 
@@ -245,7 +247,7 @@ const profile = computed(() => profileStore.profile)
 
 // Image URL
 const profileImageUrl = computed(() => {
-  return `${configurl.image_path}${profile.value?.profile?.image}`
+  return resolveImageUrl(profile.value?.profile?.image)
 })
 
 const editForm = ref({
@@ -292,17 +294,15 @@ const handleAvatarUpload = async (e) => {
   }
 
   uploadingAvatar.value = true
-  const formData = new FormData()
-  formData.append('image', file)
 
   try {
-    const response = await request('/profile/image', 'POST', formData)
-    profileStore.setProfile(response.user || response.data || response)
+    await profileStore.uploadProfileImage(file)
     showToast('Profile picture updated successfully', 'success')
   } catch (err) {
     alert('Failed to upload image.')
   } finally {
     uploadingAvatar.value = false
+
     if (avatarInput.value) avatarInput.value.value = ''
   }
 }
@@ -311,9 +311,7 @@ const removeAvatar = async () => {
   if (!confirm('Remove profile picture?')) return
   uploadingAvatar.value = true
   try {
-    await request('/profile/image', 'DELETE')
-    const updated = { ...profile.value, profile: { ...profile.value.profile, image: null } }
-    profileStore.setProfile(updated)
+    await profileStore.removeProfileImage()
     showToast('Profile picture removed.','success')
   } catch (err) {
     alert('Failed to remove image.')

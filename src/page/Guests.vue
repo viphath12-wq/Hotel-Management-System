@@ -191,12 +191,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import avatar from '../assets/user_avatar.png'
-import ConfirmModalDelete from '../components/ConfirmDeleteModel.vue'
+import request from '@/util/request'
+import { showToast } from '@/util/toast'
+import ConfirmModalDelete from '@/components/ConfirmDeleteModel.vue'
 import GuestFormModal from '@/components/guests/GuestFormModal.vue'
-import request from '../util/request'
-import { showToast } from '../util/toast'
-import configurl from '../util/configurl'
+import avatar from '@/assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 import { formatDate, timeAgo } from '@/util/helpers'
 
 const guests = ref([])
@@ -237,9 +237,8 @@ const displayedGuests = computed(() => {
 })
 
 const getGuestImage = (guest) => {
-  if (guest?.image) {
-    return `${configurl.image_path}${guest.image}`
-  }
+  const resolved = resolveImageUrl(guest?.image)
+  if (resolved) return resolved
   return avatar
 }
 

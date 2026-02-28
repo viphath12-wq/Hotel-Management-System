@@ -99,6 +99,7 @@ import request from '@/util/request'
 import { showToast } from '@/util/toast'
 import Modal from './ModalUser.vue'
 import configurl from '@/util/configurl'
+import { resolveImageUrl } from '@/util/image'
 
 const props = defineProps(['isOpen', 'user'])
 const emit = defineEmits(['close', 'updated'])
@@ -126,7 +127,7 @@ watch(() => props.user, (user) => {
     }
 
     imageFile.value = null
-    previewUrl.value = user?.profile?.image ? `${configurl.image_path}${user.profile.image}` : ''
+    previewUrl.value = resolveImageUrl(user?.profile?.image)
     if (fileInput.value) fileInput.value.value = ''
   }
 }, { immediate: true })
@@ -171,14 +172,14 @@ const onFileChange = (e) => {
   const file = e.target.files?.[0]
   if (!file) {
     imageFile.value = null
-    previewUrl.value = props.user?.profile?.image ? `${configurl.image_path}${props.user.profile.image}` : ''
+    previewUrl.value = resolveImageUrl(props.user?.profile?.image)
     return
   }
   if (file.size > 2 * 1024 * 1024) {
     showToast('Image must be less than 2MB', 'error')
     if (fileInput.value) fileInput.value.value = ''
     imageFile.value = null
-    previewUrl.value = props.user?.profile?.image ? `${configurl.image_path}${props.user.profile.image}` : ''
+    previewUrl.value = resolveImageUrl(props.user?.profile?.image)
     return
   }
   imageFile.value = file

@@ -136,6 +136,7 @@
 <script setup>
 import configurl from '../../util/configurl'
 import avatar from '../../assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 
 defineProps({
   reservations: Array,
@@ -151,9 +152,8 @@ defineProps({
 defineEmits(['view', 'edit', 'cancel', 'print', 'pay'])
 
 const getGuestImage = (reservation) => {
-  if (reservation.raw?.guest?.image) {
-    return `${configurl.image_path}${reservation.raw.guest.image}`
-  }
+  const resolved = resolveImageUrl(reservation.raw?.guest?.image)
+  if (resolved) return resolved
   return avatar
 }
 

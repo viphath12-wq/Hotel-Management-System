@@ -153,6 +153,7 @@ import { ref } from 'vue'
 import request from '@/util/request'
 import { showToast } from '@/util/toast'
 import configurl from '@/util/configurl'
+import { resolveImageUrl } from '@/util/image'
 
 const emit = defineEmits(['saved', 'saving'])
 
@@ -162,9 +163,8 @@ const editingRoom = ref(null)
 const previewImage = ref(null)
 
 const getRoomImage = (room) => {
-  if (room?.image) {
-    return `${configurl.image_path}${room.image}`
-  }
+  const resolved = resolveImageUrl(room?.image)
+  if (resolved) return resolved
   return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop'
 }
 

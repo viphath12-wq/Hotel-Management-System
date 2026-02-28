@@ -211,6 +211,7 @@ import EditUserModal from '@/components/user/EditUserModal.vue'
 import DeleteUserModal from '@/components/user/DeleteUserModal.vue'
 import configurl from '@/util/configurl'
 import userAvatar from '@/assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 
 /* ================= STATE ================= */
 const users = ref([])
@@ -319,7 +320,8 @@ const refreshUsers = () => {
 
 const getUserAvatar = (user) => {
   const image = user?.profile?.image
-  if (image) return `${configurl.image_path}${image}`
+  const resolved = resolveImageUrl(image)
+  if (resolved) return resolved
   return userAvatar
 }
 

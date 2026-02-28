@@ -262,11 +262,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import request from '../util/request'
-import { showToast } from '../util/toast'
+import request from '@/util/request'
+import { showToast } from '@/util/toast'
 import ConfirmModalDelete from '../components/ConfirmDeleteModel.vue'
 import configurl from '../util/configurl'
 import RoomFormModal from '@/components/room/RoomFormModal.vue'
+import { resolveImageUrl } from '@/util/image'
 
 const rooms = ref([])
 const isLoading = ref(false)
@@ -313,9 +314,8 @@ const filteredRooms = computed(() => {
 })
 
 const getRoomImage = (room) => {
-  if (room?.image) {
-    return `${configurl.image_path}${room.image}`
-  }
+  const resolved = resolveImageUrl(room?.image)
+  if (resolved) return resolved
   return 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&h=300&fit=crop'
 }
 

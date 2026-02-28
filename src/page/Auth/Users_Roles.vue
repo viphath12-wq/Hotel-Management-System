@@ -6,10 +6,8 @@
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Assign roles to users</p>
       </div>
 
-      <button
-        @click="openAddModal"
-        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-      >
+      <button @click="openAddModal"
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex items-center gap-2">
         <span class="material-symbols-outlined">add</span>
         Add New Assignment
       </button>
@@ -19,12 +17,8 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="relative">
           <span class="material-symbols-outlined absolute left-3 top-2 text-gray-400">search</span>
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search user / role..."
-            class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none"
-          />
+          <input v-model="searchQuery" type="text" placeholder="Search user / role..."
+            class="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none" />
         </div>
 
         <select v-model="userFilter" class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e]">
@@ -41,6 +35,16 @@
 
     <div class="bg-white dark:bg-[#1e293b] rounded-xl border dark:border-gray-700 overflow-hidden">
       <Async :promise="fetchPromise">
+        <template #loading>
+          <div class="px-6 py-12 text-center">
+            <div class="inline-flex items-center gap-3">
+              <span class="inline-flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined animate-spin text-4xl text-blue-600">refresh</span>
+                Loading...
+              </span>
+            </div>
+          </div>
+        </template>
         <template #default>
           <div class="overflow-x-auto">
             <table class="w-full text-sm">
@@ -53,19 +57,13 @@
                 </tr>
               </thead>
               <tbody class="divide-y dark:divide-gray-700">
-                <tr
-                  v-for="row in filteredRows"
-                  :key="`${row.user_id}-${row.role_id}`"
-                  class="hover:bg-gray-50 dark:hover:bg-[#2d3b4e]"
-                >
+                <tr v-for="row in filteredRows" :key="`${row.user_id}-${row.role_id}`"
+                  class="hover:bg-gray-50 dark:hover:bg-[#2d3b4e]">
                   <td class="px-6 py-4">
                     <div class="flex items-center gap-3">
-                      <img
-                        :src="getUserAvatar(row)"
+                      <img :src="getUserAvatar(row)"
                         class="h-9 w-9 rounded-full object-cover border border-gray-200 dark:border-gray-600"
-                        alt="avatar"
-                        @error="onAvatarError"
-                      />
+                        alt="avatar" @error="onAvatarError" />
                       <div>
                         <div class="font-medium">{{ row.user_name }}</div>
                         <div class="text-xs text-gray-400">{{ row.user_email }}</div>
@@ -77,29 +75,22 @@
                     <div class="text-xs text-gray-400 font-mono">{{ row.role_code }}</div>
                   </td>
                   <td class="px-6 py-4">
-                    <span
-                      class="px-3 py-1 rounded-full text-xs capitalize"
-                      :class="Number(row.role_status) === 1
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'"
-                    >
+                    <span class="px-3 py-1 rounded-full text-xs capitalize" :class="Number(row.role_status) === 1
+                      ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'">
                       {{ Number(row.role_status) === 1 ? 'active' : 'inactive' }}
                     </span>
                   </td>
                   <td class="px-6 py-4 text-center">
                     <div class="flex justify-center gap-2">
-                      <button
-                        @click="openEditModal(row)"
-                        class="p-2 text-blue-600 hover:bg-gray-100 dark:hover:bg-[#406292] rounded"
-                      >
+                      <button @click="openEditModal(row)"
+                        class="p-2 text-blue-600 hover:bg-gray-100 dark:hover:bg-[#406292] rounded">
                         <span class="material-symbols-outlined">edit</span>
                       </button>
-                      <button
-                        :disabled="deletingKey === `${row.user_id}-${row.role_id}`"
-                        @click="openDeleteModal(row)"
-                        class="p-2 text-red-600 hover:bg-gray-100 dark:hover:bg-[#774b3d] rounded disabled:opacity-60 disabled:cursor-not-allowed"
-                      >
-                        <span v-if="deletingKey === `${row.user_id}-${row.role_id}`" class="material-symbols-outlined animate-spin">refresh</span>
+                      <button :disabled="deletingKey === `${row.user_id}-${row.role_id}`" @click="openDeleteModal(row)"
+                        class="p-2 text-red-600 hover:bg-gray-100 dark:hover:bg-[#774b3d] rounded disabled:opacity-60 disabled:cursor-not-allowed">
+                        <span v-if="deletingKey === `${row.user_id}-${row.role_id}`"
+                          class="material-symbols-outlined animate-spin">refresh</span>
                         <span v-else class="material-symbols-outlined">delete</span>
                       </button>
                     </div>
@@ -121,14 +112,14 @@
     </div>
 
     <div v-if="showFormModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div class="w-full max-w-lg rounded-xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 shadow-lg">
+      <div
+        class="w-full max-w-lg rounded-xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 shadow-lg">
         <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ formMode === 'create' ? 'Add Assignment' : 'Edit Assignment' }}</h3>
-          <button
-            :disabled="isSaving"
-            @click="closeAllModals"
-            class="p-2 rounded hover:bg-gray-100 dark:hover:bg-[#2d3b4e] disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ formMode === 'create' ? 'Add Assignment'
+            :
+            'Edit Assignment' }}</h3>
+          <button :disabled="isSaving" @click="closeAllModals"
+            class="p-2 rounded hover:bg-gray-100 dark:hover:bg-[#2d3b4e] disabled:opacity-60 disabled:cursor-not-allowed">
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
@@ -136,10 +127,8 @@
         <div class="px-6 py-5 space-y-4">
           <div>
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">User</label>
-            <select
-              v-model="form.user_id"
-              class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none"
-            >
+            <select v-model="form.user_id"
+              class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none">
               <option value="">Select User</option>
               <option v-for="u in users" :key="u.id" :value="String(u.id)">{{ u.name }} ({{ u.email }})</option>
             </select>
@@ -147,10 +136,8 @@
 
           <div>
             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
-            <select
-              v-model="form.role_id"
-              class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none"
-            >
+            <select v-model="form.role_id"
+              class="mt-1 w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] outline-none">
               <option value="">Select Role</option>
               <option v-for="r in roles" :key="r.id" :value="String(r.id)">{{ r.name }} ({{ r.code }})</option>
             </select>
@@ -160,18 +147,12 @@
         </div>
 
         <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-          <button
-            :disabled="isSaving"
-            @click="closeAllModals"
-            class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] hover:bg-gray-200 dark:hover:bg-[#334155] disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+          <button :disabled="isSaving" @click="closeAllModals"
+            class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] hover:bg-gray-200 dark:hover:bg-[#334155] disabled:opacity-60 disabled:cursor-not-allowed">
             Cancel
           </button>
-          <button
-            :disabled="isSaving || !isFormValid"
-            @click="submitForm"
-            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-          >
+          <button :disabled="isSaving || !isFormValid" @click="submitForm"
+            class="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
             <span v-if="isSaving" class="material-symbols-outlined animate-spin">refresh</span>
             {{ formMode === 'create' ? 'Create' : 'Update' }}
           </button>
@@ -180,30 +161,26 @@
     </div>
 
     <div v-if="showDeleteModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div class="w-full max-w-md rounded-xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 shadow-lg">
+      <div
+        class="w-full max-w-md rounded-xl bg-white dark:bg-[#1e293b] border border-gray-200 dark:border-gray-700 shadow-lg">
         <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
           <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Delete Assignment</h3>
         </div>
 
         <div class="px-6 py-5 space-y-2">
-          <p class="text-sm text-gray-600 dark:text-gray-300">Are you sure you want to remove this role from the user?</p>
+          <p class="text-sm text-gray-600 dark:text-gray-300">Are you sure you want to remove this role from the user?
+          </p>
           <p class="text-sm font-mono text-gray-800 dark:text-gray-100">{{ selectedRowLabel }}</p>
           <p v-if="deleteError" class="text-sm text-red-600 dark:text-red-400">{{ deleteError }}</p>
         </div>
 
         <div class="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-          <button
-            :disabled="deletingKey !== null"
-            @click="closeAllModals"
-            class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] hover:bg-gray-200 dark:hover:bg-[#334155] disabled:opacity-60 disabled:cursor-not-allowed"
-          >
+          <button :disabled="deletingKey !== null" @click="closeAllModals"
+            class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-[#2d3b4e] hover:bg-gray-200 dark:hover:bg-[#334155] disabled:opacity-60 disabled:cursor-not-allowed">
             Cancel
           </button>
-          <button
-            :disabled="deletingKey !== null"
-            @click="confirmDelete"
-            class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
-          >
+          <button :disabled="deletingKey !== null" @click="confirmDelete"
+            class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2">
             <span v-if="deletingKey !== null" class="material-symbols-outlined animate-spin">refresh</span>
             Delete
           </button>
@@ -216,15 +193,16 @@
 <script setup>
 import { computed, ref } from 'vue'
 import request from '@/util/request'
+import { showToast } from '@/util/toast'
 import Async from '@/components/Async/Async.vue'
-import configurl from '@/util/configurl'
 import userAvatar from '@/assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 
 const users = ref([])
 const roles = ref([])
 const rows = ref([])
 
-const fetchPromise = ref(null)
+const fetchPromise = ref(Promise.resolve([]))
 
 const searchQuery = ref('')
 const userFilter = ref('all')
@@ -380,7 +358,8 @@ const confirmDelete = async () => {
 
 const getUserAvatar = (row) => {
   const image = row?.user_image
-  if (image) return `${configurl.image_path}${image}`
+  const resolved = resolveImageUrl(image)
+  if (resolved) return resolved
   return userAvatar
 }
 

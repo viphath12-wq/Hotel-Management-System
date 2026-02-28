@@ -221,9 +221,11 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import request from '../util/request'
-import configurl from '../util/configurl'
-import { showToast } from '../util/toast'
+import request from '@/util/request'
+import configurl from '@/util/configurl'
+import { showToast } from '@/util/toast'
+import { resolveImageUrl } from '@/util/image'
+
 import ConfirmModalDelete from '../components/ConfirmDeleteModel.vue'
 
 const Historys = ref([])
@@ -311,8 +313,9 @@ const mapHistory = (h) => {
   const reservation = h.reservation || {}
 
   // Get avatar with fallback
-  const avatar = guest.image
-    ? `${configurl.image_path}${guest.image}`
+  const resolvedAvatar = resolveImageUrl(guest.image)
+  const avatar = resolvedAvatar
+    ? resolvedAvatar
     : `https://ui-avatars.com/api/?name=${encodeURIComponent(guest.name || 'Guest')}&background=random`
 
   // Determine loyalty level based on stays

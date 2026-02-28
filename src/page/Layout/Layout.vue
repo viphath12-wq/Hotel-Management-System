@@ -77,7 +77,7 @@
         >
           <div
             class="size-10 rounded-full bg-cover bg-center bg-no-repeat border-2 border-gray-200 dark:border-gray-600"
-            :style="{ backgroundImage: `url(${configurl.image_path}${profile?.profile?.image || userAvatar})` }"
+            :style="{ backgroundImage: `url(${resolveImageUrl(profile?.profile?.image) || userAvatar})` }"
           ></div>
           <div class="min-w-0 flex-1">
             <p class="truncate text-sm font-medium">{{ profile?.name || 'User' }}</p>
@@ -179,6 +179,7 @@ import { useProfileStore } from '@/util/profile'
 import { formatDate, formatTime } from '@/util/helpers'
 import hotelLogo from '../../assets/Hotel_icon.png'
 import userAvatar from '../../assets/user_avatar.png'
+import { resolveImageUrl } from '@/util/image'
 
 import request from '../../util/request'
 import configurl from '../../util/configurl'

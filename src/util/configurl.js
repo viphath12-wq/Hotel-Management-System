@@ -6,8 +6,8 @@
 // export default configurl
 
 const configurl = {
-  baseurl: 'https://databasevue-production.up.railway.app/api',
-  image_path: 'https://databasevue-production.up.railway.app/storage/'
+  baseurl: import.meta.env.VITE_BASEURL,
+  image_path: import.meta.env.VITE_IMAGE_PATH
 }
 
 export default configurl
